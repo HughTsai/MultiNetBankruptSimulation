@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-import nju.AgentManager.LayerConstant;
+import nju.AgentManager.LayerEnum;
 import nju.AgentManager.StatusAgent;
 import nju.agent.components.BankruptDetectCom;
 import nju.agent.components.BankruptEventResponseCom;
@@ -15,7 +15,7 @@ import nju.util.AgentsWorld;
 public class ActionAgent {
 	private String id;
 	//变量表示该agent所处的层次
-	private LayerConstant layer = null;
+	private LayerEnum layer = null;
 	//变量指向该agent的本体对象
 	private StatusAgent statusAgent = null;
 	//该agent所处层次的关系图
@@ -39,7 +39,7 @@ public class ActionAgent {
 	 *  e=2
 	 *  K=10
 	 */
-	public ActionAgent(String id, double aerfa,LayerConstant layer,StatusAgent statusAgent,
+	public ActionAgent(String id, double aerfa,LayerEnum layer,StatusAgent statusAgent,
 			AgentRelations relations,ArrayList<ActionAgent> bnkAgents,
 			AgentsWorld agentsWorld){
 		this.id = id;
@@ -56,10 +56,12 @@ public class ActionAgent {
 	//仅在模拟初始时调用，设置破产传染源；
 	public void setBankruptcy(){
 		//记录
-		this.agentsWorld.bankruptNum++;
-		this.isBankruptcy = true;
-		//bankruptAction();
-		this.bnkAgents.add(this);
+		if(this.isBankruptcy==false){
+			this.isBankruptcy = true;
+			this.agentsWorld.bankruptNum++;
+			//bankruptAction();
+			this.bnkAgents.add(this);
+		}
 	}
 	
 	public String getID(){

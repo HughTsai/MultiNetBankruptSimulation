@@ -10,6 +10,7 @@ import nju.net.components.ActionAgent;
 public class StatusAgent {
 	private String id;
 	//存放该agent在分层中的各个分身，如果值为null表示在对应层次没有该agent的分身。
+	//层次的id简单的表示为1,2,3...等数字
 	private HashMap<String,ActionAgent> agentsInNet = new HashMap<>();
 	
 	private AssetsCom assetsCom;
@@ -30,6 +31,7 @@ public class StatusAgent {
 	 *  e=2
 	 *  K=10
 	 */
+	public StatusAgent(){}
 	public StatusAgent(String id, double u, double c, double e, double k){
 		this.id = id;
 		
@@ -67,13 +69,19 @@ public class StatusAgent {
 		ActionAgent agent= this.agentsInNet.get(layerID);
 		return agent;
 	}
+	public ActionAgent getActionAgent(LayerEnum layerID){
+		return this.getActionAgent(layerID.getName());
+	}
 	//设置本agent在其他层次的对象引用
 	public void setActionAgent(String layerID,ActionAgent agent){
 		this.agentsInNet.put(layerID, agent);
 	}
+	public void setActionAgent(LayerEnum layerID,ActionAgent agent){
+		this.setActionAgent(layerID.getName(),agent );
+	}
 	//接收传递过来需要减少的资产值，并在自己的资产中扣除这部分资产，扣除完毕，表示
 	//状态发生改变，马上进行破产确认。
-    public void acceptDiff_c(double diff_c){
+    public synchronized void acceptDiff_c(double diff_c){
     	this.assetsCom.minusCash(diff_c);
     	if(!this.isBankruptcy()){
     		this.assetsCom.autoRecovery();

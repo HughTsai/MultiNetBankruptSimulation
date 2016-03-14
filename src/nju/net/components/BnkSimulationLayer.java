@@ -1,26 +1,32 @@
 package nju.net.components;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import nju.AgentManager.AgentManager;
-import nju.AgentManager.LayerConstant;
+import nju.AgentManager.LayerEnum;
 import nju.util.AgentsWorld;
 
 
-public class BnkSimulationLayer extends AgentsWorld{
+public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 	public static long INTERVAL = 0;
 	//记录自己所处的层次
-	private LayerConstant layer = null;
+	private LayerEnum layer = null;
 	
-	public BnkSimulationLayer(LayerConstant layer){
+	public BnkSimulationLayer(LayerEnum layer){
 		this.layer = layer;
 		this.init();
 	}
 	
 	ArrayList<ActionAgent> bnkAgents = new ArrayList<>();
 	ActionAgent[] agents = null;
-	AgentRelations relations = null;
+	AgentRelations relations = AgentRelations.getInstance();
+	
+	public ActionAgent[] getActionAgents(){
+		return this.agents;
+	}
+	public LayerEnum getLayer(){
+		return this.layer;
+	}
 	
 	private double[][] getEmptyRelations(int len){
 		double[][] relations = new double[len][len];
@@ -114,28 +120,22 @@ public class BnkSimulationLayer extends AgentsWorld{
 		relations[49][43] = 5;
 		
 		this.relations.initRelations(relations, agents);
+		
+		System.out.println("  初始化第"+this.layer.getName()+"层关系网络完成");
 	}
 
 	@Override
 	public void initAgents() {
 		// TODO Auto-generated method stub 可以从文件读取也可以硬编码
-		double u = 1.5;// 破产阈值，u >0 , 
-		double aerfa = 0.6;//破产传染逆向影响系数，  0<=aerfa<=1
-		double e = 2;// 周期回复最小值
-		double k = 4;// 周期回复速率指标。k越大，回复越慢(周期回复的值越小）。
-		
-		int[] c = {100,15,30,45,35,20,30,28,25,20,
-					25,28,20,5,5,10,15,5,20,45,
-					35,5,30,50,60,25,40,25,35,5,
-					10,25,20,10,19,25,35,2,10,15,
-					35,50,15,20,25,100,50,25,18,50};
-		
+		double aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
+	
 		agents = new ActionAgent[50]; 
 		for(int i = 0; i < 50 ; i++){
 			agents[i] = new ActionAgent("action "+i, aerfa, this.layer, 
 					AgentManager.getStatusAgent("status "+i),
 					this.relations, bnkAgents, this);
 		}
+		System.out.println("  初始化第"+this.layer.getName()+"层ActionAgent完成");
 	}
 
 	/**
@@ -147,9 +147,11 @@ public class BnkSimulationLayer extends AgentsWorld{
 		
 		int turnbefore_bankruptNums = 0;
 		timestep = 0;
+		System.out.println("第"+this.layer.getName()+"层模拟，"+"第"+timestep+"周期");
+		System.out.println("第"+this.layer.getName()+"层模拟，"+"当前破产数量"+this.bankruptNum);
 		while(turnbefore_bankruptNums != this.bankruptNum){
 			turnbefore_bankruptNums = this.bankruptNum;
-			timestep++;
+			
 			try {
 				Thread.sleep(INTERVAL);
 			} catch (InterruptedException e) {
@@ -165,6 +167,9 @@ public class BnkSimulationLayer extends AgentsWorld{
 			bnkAgents.clear();
 			//周期从这里开始，thinking是第一步，上面的破产消息传递是第二步。
 			//agent进行思考，处理破产消息，判断自己是否破产
+			timestep++;
+			System.out.println("第"+this.layer.getName()+"层模拟，"+"第"+timestep+"周期");
+			System.out.println("第"+this.layer.getName()+"层模拟，"+"当前破产数量"+this.bankruptNum);
 			for(int i = 0 ; i < agents.length ; i++){
 				ActionAgent agent = agents[i];
 				if(!agent.isBankruptcy())
@@ -172,10 +177,9 @@ public class BnkSimulationLayer extends AgentsWorld{
 			}
 			
 		}
-		
-		timestep = 0;
-		
-		//System.out.println("一次模拟结束");
+		System.out.println("第"+this.layer.getName()+"层模拟，"+"在"+timestep+"周期停止");
+		System.out.println("第"+this.layer.getName()+"层模拟，"+"最终破产数量"+this.bankruptNum);
+		System.out.println("第"+this.layer.getName()+"层"+"模拟结束");
 		
 	}
 	
@@ -246,6 +250,11 @@ public class BnkSimulationLayer extends AgentsWorld{
 		}
 		
 		return temp/len;
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		this.startSimulation();
 	}
 
 }

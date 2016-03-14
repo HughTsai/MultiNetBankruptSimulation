@@ -14,7 +14,7 @@ public class AgentManager {
 	//agent需要分成多少个层次
 	private static int layerNumber = 0;
 	//记录所有层次的引用
-	private static HashMap<LayerConstant,BnkSimulationLayer> layers = new HashMap<>();
+	private static HashMap<LayerEnum,BnkSimulationLayer> layers = new HashMap<>();
 	
 	
 	
@@ -26,19 +26,19 @@ public class AgentManager {
 		AgentManager.layerNumber = layerNumber;
 	}
 
-	public static HashMap<LayerConstant, BnkSimulationLayer> getLayers() {
+	public static HashMap<LayerEnum, BnkSimulationLayer> getLayers() {
 		return layers;
 	}
 
-	public static void setLayers(HashMap<LayerConstant, BnkSimulationLayer> layers) {
+	public static void setLayers(HashMap<LayerEnum, BnkSimulationLayer> layers) {
 		AgentManager.layers = layers;
 	}
 
-	public static void setLayer(LayerConstant layer,BnkSimulationLayer LObject){
+	public static void setLayer(LayerEnum layer,BnkSimulationLayer LObject){
 		AgentManager.layers.put(layer, LObject);
 	}
 	
-	public static BnkSimulationLayer getlayer(LayerConstant layer){
+	public static BnkSimulationLayer getlayer(LayerEnum layer){
 		return AgentManager.layers.get(layer);
 	}
 	

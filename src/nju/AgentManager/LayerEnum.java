@@ -1,10 +1,10 @@
 package nju.AgentManager;
 
-public enum LayerConstant {
-	Layer1("第一层"),Layer2("第二层"),Layer3("第三层");
+public enum LayerEnum {
+	Layer1("1"),Layer2("2"),Layer3("3");
 	
 	String layerName;
-	LayerConstant (String name){
+	LayerEnum (String name){
 		this.layerName = name;
 	}
 	public String getName(){
