@@ -28,7 +28,9 @@ public class AgentRelations {
 		
 		for(int i = 0 ; i < agents.length ; i++){
 			ActionAgent agent = agents[i];
-			id_table.put(agent.getID(), i);
+			if(agent!=null){
+				id_table.put(agent.getID(), i);
+			}
 		}
 		
 		this.agents = agents;

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import nju.net.components.ActionAgent;
 
 public abstract class AgentsWorld {
-	public  int timestep = 0;
-	public  int bankruptNum = 0;
+	public int timestep = 0;
+	public static int bankruptNum = 0;
 
 	
 	public void init(){

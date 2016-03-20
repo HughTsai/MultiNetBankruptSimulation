@@ -124,5 +124,9 @@ public class AgentManager {
 			}
 		}
 	}
+	public static void clearAll(){
+		agents.clear();
+		layers.clear();
+	}
 	
 }

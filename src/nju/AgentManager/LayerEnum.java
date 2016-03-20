@@ -1,7 +1,7 @@
 package nju.AgentManager;
 
 public enum LayerEnum {
-	Layer1("1"),Layer2("2"),Layer3("3");
+	Layer1("1"),Layer2("2"),Layer3("3"),control("4");
 	
 	String layerName;
 	LayerEnum (String name){
@@ -9,5 +9,8 @@ public enum LayerEnum {
 	}
 	public String getName(){
 		return this.layerName;
+	}
+	public int getNum(){
+		return Integer.parseInt(this.layerName);
 	}
 }

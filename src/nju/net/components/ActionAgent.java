@@ -40,14 +40,12 @@ public class ActionAgent {
 	 *  K=10
 	 */
 	public ActionAgent(String id, double aerfa,LayerEnum layer,StatusAgent statusAgent,
-			AgentRelations relations,ArrayList<ActionAgent> bnkAgents,
-			AgentsWorld agentsWorld){
+			AgentRelations relations,ArrayList<ActionAgent> bnkAgents){
 		this.id = id;
 		this.layer = layer;
 		this.statusAgent = statusAgent;
 		this.relations = relations;
 		this.bnkAgents = bnkAgents;
-		this.agentsWorld = agentsWorld;
 		
 		beRespCom = new BankruptEventResponseCom(aerfa);
 		register_map.put(beRespCom.getClass().getName(), beRespCom);
@@ -58,7 +56,7 @@ public class ActionAgent {
 		//记录
 		if(this.isBankruptcy==false){
 			this.isBankruptcy = true;
-			this.agentsWorld.bankruptNum++;
+			//this.agentsWorld.bankruptNum++;
 			//bankruptAction();
 			this.bnkAgents.add(this);
 		}

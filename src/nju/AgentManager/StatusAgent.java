@@ -5,6 +5,7 @@ import java.util.Set;
 
 import nju.agent.components.*;
 import nju.net.components.ActionAgent;
+import nju.util.AgentsWorld;
 
 
 public class StatusAgent {
@@ -39,11 +40,15 @@ public class StatusAgent {
 		assetsCom = new AssetsCom(this, c, e, k);
 		register_map.put(assetsCom.getClass().getName(), assetsCom);
 		register_map.put(brdCom.getClass().getName(), brdCom);
+		this.agentsInNet.put("1", null);
+		this.agentsInNet.put("2", null);
+		this.agentsInNet.put("3", null);
 	}
 	
 	//仅在模拟初始时调用，设置破产传染源；
 	public void setBankruptcy(){
 		isBankruptcy = true;
+		AgentsWorld.bankruptNum++;
 		Set<String> layerIDs = this.agentsInNet.keySet();
 		for(String layerID: layerIDs){
 			ActionAgent actionAgent = this.agentsInNet.get(layerID);
@@ -81,7 +86,7 @@ public class StatusAgent {
 	}
 	//接收传递过来需要减少的资产值，并在自己的资产中扣除这部分资产，扣除完毕，表示
 	//状态发生改变，马上进行破产确认。
-    public synchronized void acceptDiff_c(double diff_c){
+    public  void acceptDiff_c(double diff_c){
     	this.assetsCom.minusCash(diff_c);
     	if(!this.isBankruptcy()){
     		this.assetsCom.autoRecovery();
