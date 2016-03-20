@@ -26,6 +26,10 @@ public class ActionAgent {
 	AgentsWorld agentsWorld = null;
 	private BankruptEventResponseCom beRespCom;
 	
+	public void clearStatusAgent(){
+		statusAgent = null;
+		bnkAgents = null;
+	}
 	private boolean isBankruptcy = false;//是否破产
 	private Stack<AbstractMessage> msg_queue = new Stack<AbstractMessage>();
 	private HashMap<String,Component> register_map = new HashMap<String, Component>();

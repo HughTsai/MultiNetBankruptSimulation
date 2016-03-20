@@ -1,4 +1,4 @@
-package experiment1;
+package experiment2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,29 +12,42 @@ import nju.AgentManager.StatusAgent;
 import nju.net.components.ActionAgent;
 import nju.net.components.BnkSimulationLayer;
 import nju.util.AgentsWorld;
+import nju.util.UtilLock;
 
-public class AgentsWorldSimple1{
-	private double u = 0.3;// 破产阈值，u >0 , 
-	private double e = 2;// 周期回复最小值
-	private double k = 10;// 周期回复速率指标。k越大，回复越慢(周期回复的值越小）。
-	private double aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
+
+/**
+ * 用户模拟实验2的实现类
+ * 其中包含每次模拟的实现method；
+ * @author HUGH
+ *
+ */
+public class AgentWorldSimple2 {
+	public static long INTERVAL = 0;
+	//该次实验中，模拟次数
+	private int simulateNum = 0;
+	//该次实验的agent数量
+	private int agentNum = -1;
+	//存放该次实验的所有结果
+	private ExperimentData results;
 	
 	private ExecutorService pool = Executors.newFixedThreadPool(3);
 	private CyclicBarrier barrier = new CyclicBarrier(3) ;
-
-	public AgentsWorldSimple1(double u, double e, double k, double aerfa) {
+	
+	public AgentWorldSimple2(int simulateNum, int agentNum) {
 		super();
-		this.u = u;
-		this.e = e;
-		this.k = k;
-		this.aerfa = aerfa;
+		this.simulateNum = simulateNum;
+		this.agentNum = agentNum;
+		this.results = new ExperimentData(simulateNum, agentNum);
 	}
-
 	private void init() {
 		//AgentManager.clearAll();
 		//第一步先初始化AgentManager中的所有statusAgent
 		int statusAgentLength = 50;
 		StatusAgent[] agents = new StatusAgent[statusAgentLength]; 
+		double u = 0.3;// 破产阈值，u >0 , 
+		double e = 2;// 周期回复最小值
+		double k = 10;// 周期回复速率指标。k越大，回复越慢(周期回复的值越小）。
+		double aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
 		
 		int[] c = {20,30,30,30,2,15,5,20,15,30,
 					30,5,8,13,2,13,5,30,8,
@@ -153,17 +166,17 @@ public class AgentsWorldSimple1{
 		//实例化各个层
 		LayerEnum layer = LayerEnum.valueOf("Layer1");
 		//System.out.println("初始化第1"+"层中的数据：");
-		BnkSimulationLayer bnk =new BnkSimulationLayer(layer,relation1,indexAction1,aerfa,barrier);
+		BnkSimulationLayer bnk =new BnkSimulationLayer(layer,relation1,indexAction1,aerfa,this.barrier);
 		AgentManager.setLayer(layer, bnk);
 		
 		layer = LayerEnum.valueOf("Layer2");
 		//System.out.println("初始化第2"+"层中的数据：");
-		bnk =new BnkSimulationLayer(layer,relation2,indexAction2,aerfa,barrier);
+		bnk =new BnkSimulationLayer(layer,relation2,indexAction2,aerfa,this.barrier);
 		AgentManager.setLayer(layer, bnk);
 		
 		layer = LayerEnum.valueOf("Layer3");
 		//System.out.println("初始化第3"+"层中的数据：");
-		bnk =new BnkSimulationLayer(layer,relation3,indexAction3,aerfa,barrier);
+		bnk =new BnkSimulationLayer(layer,relation3,indexAction3,aerfa,this.barrier);
 		AgentManager.setLayer(layer, bnk);
 		
 		//第三步，将StatusAgent与每一层对应的分身绑定好
@@ -214,94 +227,68 @@ public class AgentsWorldSimple1{
 		statusAgent.setActionAgent(LayerEnum.Layer2, actionAgents2[18]);
 		statusAgent.setActionAgent(LayerEnum.Layer3, actionAgents3[18]);
 		
-		
-//		//第四步，设置初始破产的agent数量
-//		int bnkAgentNumber = 5;
-//		AgentManager.initBankruptcySource(bnkAgentNumber);
-//		System.out.println(bnkAgentNumber+"个初始破产结点设置完成");
-//		
-//		
-//		//第五步，每一层都开始模拟
-//		for(int i = 0;i<layerNumber;i++){
-//			layer = LayerEnum.valueOf("Layer"+(i+1));
-//			BnkSimulationLayer bnkLayer = AgentManager.getlayer(layer);
-//			
-//			Thread thread = new Thread(bnkLayer);
-//			System.out.println("开始第"+(i+1)+"层网络的模拟");
-//			thread.start();
-//		}
-		
-		//System.out.println("整个实验模拟结束");
 	}
-	
-	public void simulate(){
-		int init_B_num = 1;
-		ExperimentData.clean();
+	/**
+	 * 破产传递的“一次”模拟（只适用于实验二，比起实验一已经改造过）
+	 * @param num 该次模拟的序号
+	 */
+	private void startSimulation(int num) {
+		// TODO 自动生成的方法存根
+		int turnbefore_bankruptNums = 0;
+		int timestep = 0;
+		OnceSimuResult onceExptRst = new OnceSimuResult(num);
+		onceExptRst.add(new PointResult(timestep, AgentsWorld.bankruptNum));//加入初始时的破产情况PointResult
 		
-		for(int k = 0 ; k < 50 ; k++){
-			final int counts = 500;
-			double[] incres = new double[counts];
-			double init_R_ratio = 0;
-			System.out.println("初始破产点数："+init_B_num+"=============");
-			for(int i = 0 ; i < counts ; i  ++){
-				//初始化层结构，包括各个agent与边
-				System.out.println("初始破产点数："+init_B_num+"第"+(i+1)+"模拟");
-				this.init();
-				
-				//初始化最初的破产agent数量
-				AgentManager.initBankruptcySource(init_B_num);
-				
-				init_R_ratio = this.calBankruptRatio();
-				
-				startSimulation();
-				
-				
-				double final_R_ratio = this.calBankruptRatio();
-				double incre_R_ratio = final_R_ratio - init_R_ratio;
-				
-				incres[i] = incre_R_ratio;
-				
-			}
-			//we have 1 init_R_ratio and 10 incre_R_ratio now
-			double incre_avg = this.calAverage(incres);
-			SimulationResult line = new SimulationResult(init_R_ratio, incre_avg);
-			ExperimentData.addData(line);
-			
-			//初始破产agent数增加；
-			System.out.println(init_B_num++);
-			//System.gc();
-		}
 		
-		ExperimentData.showData();
-	}
-	
-	
-	
-	private void startSimulation() {
 		for(int i = 0;i<3;i++){
 			LayerEnum layer = LayerEnum.valueOf("Layer"+(i+1));
 			BnkSimulationLayer bnkLayer = AgentManager.getlayer(layer);
-			
 			pool.execute(bnkLayer);
 		}
-	}
-
-
-
-	private double calBankruptRatio(){
-		int len = 50;
-		double ratio = ((double) AgentsWorld.bankruptNum ) / len;
-		return ratio;
-	}
-	
-	private double calAverage(double[] data){
-		double temp = 0 ;
-		int len = data.length;
-		for(int i = 0 ; i < len ; i++){
-			temp += data[i];
+		while(turnbefore_bankruptNums != AgentsWorld.bankruptNum){
+			UtilLock.lock();
+			
+			turnbefore_bankruptNums = AgentsWorld.bankruptNum;
+			if(UtilLock.getPower()!=4){
+				UtilLock.controlConWait();
+			}
+			timestep++;
+			onceExptRst.add(new PointResult(timestep, AgentsWorld.bankruptNum));//该周期结束时的破产情况
+		
+			UtilLock.resetPower();
+			UtilLock.layerConSignal();
+			UtilLock.unlock();
 		}
 		
-		return temp/len;
+		timestep = 0;
+		
+		System.out.println("第"+(num+1)+"次模拟结束");
+		results.addData(onceExptRst);
+	}
+	/**
+	 * 实验模拟
+	 * @param simulateNum 该次实验需要模拟破产传递的次数
+	 * @param initBankruptNumP 设置初始破产结点数量
+	 */
+	public void simulate(int initBankruptNumP){
+		int initBankruptNum = initBankruptNumP;
+		
+		results.clean();//实验前结果集清空
+		
+		for(int i = 0 ; i < simulateNum ; i++){
+			init();
+			if(initBankruptNum > 50)
+				break;
+			
+			AgentManager.initBankruptcySource(initBankruptNum);
+			
+			startSimulation(i);
+			
+		}
+		
+		//用图显示结果。
+		results.showData();
 	}
 
+	
 }

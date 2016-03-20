@@ -137,18 +137,18 @@ public class TestModel {
 		//实例化各个层
 		LayerEnum layer = LayerEnum.valueOf("Layer1");
 		System.out.println("初始化第1"+"层中的数据：");
-		BnkSimulationLayer bnk =new BnkSimulationLayer(layer,relation1,indexAction1,aerfa);
-		AgentManager.setLayer(layer, bnk);
+		//BnkSimulationLayer bnk =new BnkSimulationLayer(layer,relation1,indexAction1,aerfa);
+		//AgentManager.setLayer(layer, bnk);
 		
 		layer = LayerEnum.valueOf("Layer2");
 		System.out.println("初始化第2"+"层中的数据：");
-		bnk =new BnkSimulationLayer(layer,relation2,indexAction2,aerfa);
-		AgentManager.setLayer(layer, bnk);
+		//bnk =new BnkSimulationLayer(layer,relation2,indexAction2,aerfa);
+		//AgentManager.setLayer(layer, bnk);
 		
 		layer = LayerEnum.valueOf("Layer3");
 		System.out.println("初始化第3"+"层中的数据：");
-		bnk =new BnkSimulationLayer(layer,relation3,indexAction3,aerfa);
-		AgentManager.setLayer(layer, bnk);
+		//bnk =new BnkSimulationLayer(layer,relation3,indexAction3,aerfa);
+		//AgentManager.setLayer(layer, bnk);
 		
 		//第三步，将StatusAgent与每一层对应的分身绑定好
 		

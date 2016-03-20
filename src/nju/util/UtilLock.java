@@ -46,7 +46,7 @@ public class UtilLock {
 		}
 	}
 	public static void autoIncrease_1(){
-		UtilLock.power++;
+		UtilLock.power+=1;
 	}
 	public static void resetPower(){
 		UtilLock.power = 1;

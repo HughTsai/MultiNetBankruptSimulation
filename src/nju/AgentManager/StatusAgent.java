@@ -14,6 +14,9 @@ public class StatusAgent {
 	//层次的id简单的表示为1,2,3...等数字
 	private HashMap<String,ActionAgent> agentsInNet = new HashMap<>();
 	
+	public void clearAgents(){
+		this.agentsInNet.clear();
+	}
 	private AssetsCom assetsCom;
 	private BankruptDetectCom brdCom;
 	

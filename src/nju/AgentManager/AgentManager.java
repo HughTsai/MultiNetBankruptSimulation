@@ -2,8 +2,10 @@ package nju.AgentManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
+import nju.net.components.ActionAgent;
 import nju.net.components.BnkSimulationLayer;
 import nju.util.OutboundException;
 
@@ -125,7 +127,23 @@ public class AgentManager {
 		}
 	}
 	public static void clearAll(){
+		Iterator<String> itr = agents.keySet().iterator();
+		while(itr.hasNext()){
+			StatusAgent agent = agents.get(itr.next());
+			agent.clearAgents();
+		}
 		agents.clear();
+		
+		Iterator<LayerEnum> itr2 = layers.keySet().iterator();
+		while(itr.hasNext()){
+			LayerEnum layer = itr2.next();
+			BnkSimulationLayer bnk = layers.get(layer);
+			ActionAgent[] agents = bnk.getActionAgents();
+			for(int i = 0;i<agents.length;i++){
+				agents[i].clearStatusAgent();
+			}
+			bnk.clearAll();
+		}
 		layers.clear();
 	}
 	

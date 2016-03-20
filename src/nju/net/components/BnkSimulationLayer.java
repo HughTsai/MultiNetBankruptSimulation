@@ -1,6 +1,8 @@
 package nju.net.components;
 
 import java.util.ArrayList;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.ReentrantLock;
 
 import nju.AgentManager.AgentManager;
@@ -14,13 +16,16 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 	//记录自己所处的层次
 	private LayerEnum layer = null;
 	double aerfa = 0;
+	
+	CyclicBarrier barrier = null;
 	//构造函数
 	public BnkSimulationLayer(LayerEnum layer,double[][] relationsArray, ArrayList<Integer> index,
-			double aerfa){
+			double aerfa,CyclicBarrier barrier){
 		this.relationsArray = relationsArray;
 		this.actionAgentIndex = index;
 		this.layer = layer;
 		this.aerfa = aerfa;
+		this.barrier = barrier;
 		this.init();
 	}
 	
@@ -32,6 +37,11 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 	double[][] relationsArray ;
 	//由外部传入的该层的ActionAgent序列号
 	ArrayList<Integer> actionAgentIndex = new ArrayList<>();
+	
+	public void clearAll(){
+		actionAgentIndex.clear();
+		bnkAgents.clear();
+	}
 	
 	public ActionAgent[] getActionAgents(){
 		return this.agents;
@@ -90,52 +100,43 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 		timestep = 0;
 		//System.out.println("第"+this.layer.getName()+"层模拟，"+"第"+timestep+"周期");
 		//System.out.println("第"+this.layer.getName()+"层模拟，"+"当前破产总数量"+AgentsWorld.bankruptNum);
-		while(true){
+		while(turnbefore_bankruptNums != AgentsWorld.bankruptNum){
+			turnbefore_bankruptNums = AgentsWorld.bankruptNum;
+			
 			UtilLock.lock();
-			if(turnbefore_bankruptNums != AgentsWorld.bankruptNum){
-				turnbefore_bankruptNums = AgentsWorld.bankruptNum;
-				
-	//			if(UtilLock.getPower()==4){
-	//				UtilLock.layerConWait();
-	//			}
-				try {
-					Thread.sleep(INTERVAL);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if(UtilLock.getPower()==4){
+				UtilLock.layerConWait();
+			}
+			try {
+				Thread.sleep(INTERVAL);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//破产消息传递
+			int length = this.bnkAgents.size();
+			for(int i = 0;i < length;i++){
+				ActionAgent agent = this.bnkAgents.get(i);
+				agent.bankruptAction();
+			}
+			bnkAgents.clear();
+			//周期从这里开始，thinking是第一步，上面的破产消息传递是第二步。
+			//agent进行思考，处理破产消息，判断自己是否破产
+			timestep++;
+			for(int i = 0 ; i < agents.length ; i++){
+				ActionAgent agent = agents[i];
+				if(agent!=null){
+					if(!agent.isBankruptcy())
+						agent.thinking();
 				}
-				//破产消息传递
-				int length = this.bnkAgents.size();
-				for(int i = 0;i < length;i++){
-					ActionAgent agent = this.bnkAgents.get(i);
-					agent.bankruptAction();
-				}
-				bnkAgents.clear();
-				//周期从这里开始，thinking是第一步，上面的破产消息传递是第二步。
-				//agent进行思考，处理破产消息，判断自己是否破产
-				timestep++;
-				//System.out.println("第"+this.layer.getName()+"层模拟，"+"第"+timestep+"周期");
-				//System.out.println("第"+this.layer.getName()+"层模拟，"+"当前破产数量"+AgentsWorld.bankruptNum);
-				for(int i = 0 ; i < agents.length ; i++){
-					ActionAgent agent = agents[i];
-					if(agent!=null){
-						if(!agent.isBankruptcy())
-							agent.thinking();
-					}
-				}
-				
-				
-	//			UtilLock.autoIncrease_1();
-	//			if(UtilLock.getPower()==4){
-	//				UtilLock.controlConSignal();
-	//			}
-				UtilLock.unlock();
-			}else{
-				UtilLock.unlock();
-				break;
 			}
 			
 			
+			UtilLock.autoIncrease_1();
+			if(UtilLock.getPower()==4){
+				UtilLock.controlConSignal();
+			}
+			UtilLock.unlock();
 		}
 		//System.out.println("第"+this.layer.getName()+"层模拟，"+"在"+timestep+"周期停止");
 		//System.out.println("第"+this.layer.getName()+"层模拟，"+"最终破产总数量"+AgentsWorld.bankruptNum);
@@ -143,61 +144,19 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 		
 	}
 	
-	
-	
-//	public void simulate(){
-//		int init_B_num = 1;
-//		ExperimentData.clean();
-//		try {
-//			Logger.start();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		for(int k = 0 ; k < 50 ; k++){
-//			final int counts = 500;
-//			double[] incres = new double[counts];
-//			double init_R_ratio = 0;
-//			
-//			for(int i = 0 ; i < counts ; i  ++){
-//				
-//				
-//				Logger.log_startSimulation();
-//				
-//				initBankruptcySource(init_B_num);
-//				
-//				init_R_ratio = this.calBankruptRatio();
-//				
-//				startSimulation();
-//				
-//				Logger.log_endSimulation();
-//				
-//				double final_R_ratio = this.calBankruptRatio();
-//				double incre_R_ratio = final_R_ratio - init_R_ratio;
-//				
-//				incres[i] = incre_R_ratio;
-//			}
-//			//we have 1 init_R_ratio and 10 incre_R_ratio now
-//			double incre_avg = this.calAverage(incres);
-//			SimulationResult line = new SimulationResult(init_R_ratio, incre_avg);
-//			ExperimentData.addData(line);
-//			
-//			//初始破产agent数增加；
-//			System.out.println(init_B_num++);
-//		}
-//		
-//		Logger.stop();
-//		//用图显示结果。
-//		
-//		ExperimentData.showData();
-//		//plot(data);
-//	}
-	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		this.startSimulation();
+		try {
+			barrier.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BrokenBarrierException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
