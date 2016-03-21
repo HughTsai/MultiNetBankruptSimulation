@@ -47,7 +47,12 @@ public class StatusAgent {
 		this.agentsInNet.put("2", null);
 		this.agentsInNet.put("3", null);
 	}
-	
+	public void setAsset(double c){
+		this.assetsCom.setC(c);
+	}
+	public void setU(double u){
+		this.brdCom.setU(u);
+	}
 	//仅在模拟初始时调用，设置破产传染源；
 	public void setBankruptcy(){
 		isBankruptcy = true;

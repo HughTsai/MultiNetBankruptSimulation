@@ -3,7 +3,6 @@ package nju.net.components;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.ReentrantLock;
 
 import nju.AgentManager.AgentManager;
 import nju.AgentManager.LayerEnum;
@@ -104,9 +103,9 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 			turnbefore_bankruptNums = AgentsWorld.bankruptNum;
 			
 			UtilLock.lock();
-			if(UtilLock.getPower()==4){
-				UtilLock.layerConWait();
-			}
+//			if(UtilLock.getPower()==4){
+//				UtilLock.layerConWait();
+//			}
 			try {
 				Thread.sleep(INTERVAL);
 			} catch (InterruptedException e) {
@@ -132,16 +131,12 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 			}
 			
 			
-			UtilLock.autoIncrease_1();
-			if(UtilLock.getPower()==4){
-				UtilLock.controlConSignal();
-			}
+//			UtilLock.autoIncrease_1();
+//			if(UtilLock.getPower()==4){
+//				UtilLock.controlConSignal();
+//			}
 			UtilLock.unlock();
 		}
-		//System.out.println("第"+this.layer.getName()+"层模拟，"+"在"+timestep+"周期停止");
-		//System.out.println("第"+this.layer.getName()+"层模拟，"+"最终破产总数量"+AgentsWorld.bankruptNum);
-		//System.out.println("第"+this.layer.getName()+"层"+"模拟结束");
-		
 	}
 	
 	@Override

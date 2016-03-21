@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="lib/javabuilder.jar"/>
 	<classpathentry kind="lib" path="lib/expt1.jar"/>
 	<classpathentry kind="lib" path="lib/expt2.jar"/>
+	<classpathentry kind="lib" path="lib/expt4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

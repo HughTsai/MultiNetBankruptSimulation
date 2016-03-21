@@ -3,10 +3,13 @@ package nju.agent.components;
 import nju.AgentManager.StatusAgent;
 
 public class BankruptDetectCom implements Component{
-	private final double U;//破产阈值U
+	private double U;//破产阈值U
 	private StatusAgent agent;
 	
 	
+	public void setU(double u){
+		this.U = u;
+	}
 	public BankruptDetectCom(StatusAgent agent, double u){
 		this.agent = agent;
 		this.U = u;

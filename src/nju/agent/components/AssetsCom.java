@@ -7,6 +7,9 @@ public class AssetsCom implements Component{
 	private final double origin_c;
 	private double c;//agent的初始资产C
 	
+	public void setC(double c){
+		this.c = c;
+	}
 	private final double e;//agent周期回复的最小值ε
 	private final double k;//agent回复速率指标k
 	/**

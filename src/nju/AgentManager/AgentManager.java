@@ -64,7 +64,7 @@ public class AgentManager {
 	 * @param len agent的总数量
 	 * @return 返回被选择破产的结点list
 	 */
-	private static ArrayList<Integer> selectDistinctNums(final int n, final int len){
+	public static ArrayList<Integer> selectDistinctNums(final int n, final int len){
 		if(n == 0)
 			return null;
 		if(n == len){
