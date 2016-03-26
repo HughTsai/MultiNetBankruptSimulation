@@ -54,15 +54,11 @@ public class AgentWorldSimpleTest {
 		//第一步先初始化AgentManager中的所有statusAgent
 		int statusAgentLength = 50;
 		StatusAgent[] agents = new StatusAgent[statusAgentLength]; 
-		u = 0.3;// 破产阈值，u >0 , 
-		e = 2;// 周期回复最小值
-		k = 10;// 周期回复速率指标。k越大，回复越慢(周期回复的值越小）。
-		aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
 		
-		int[] c = {20,30,30,30,2,15,5,20,15,30,
-					30,5,8,13,2,13,5,30,8,
-					15,5,30,20,15,15,9,5,3,7,
-					3,15,33,18,8,7,12,30,10,8,
+		int[] c = {20,30,30,30,2,15,5,25,15,30,
+					30,5,8,20,2,25,5,30,20,
+					15,20,30,20,15,15,11,5,3,7,
+					20,15,33,20,8,7,12,30,10,8,
 					8,7,6,30,15,10,28,8,10,8,7};
 		
 		for(int i = 0; i < 50 ; i++){
@@ -107,7 +103,7 @@ public class AgentWorldSimpleTest {
 		relation2[20][13] = 33;
 		relation2[13][21] = 40;
 		relation2[21][15] = 35;
-		relation2[22][23] = 30;
+		relation2[22][21] = 17;
 		relation2[23][15] = 22;
 		relation2[15][24] = 38;
 		relation2[24][16] = 10;
@@ -123,7 +119,7 @@ public class AgentWorldSimpleTest {
 		
 		double[][] relation3 = BnkSimulationLayer.getEmptyRelations(50);
 		relation3[31][18] = 38;
-		relation3[32][18] = 20;
+		relation3[32][18] = 15;
 		relation3[18][29] = 40;
 		relation3[29][33] = 15;
 		relation3[29][34] = 15;
@@ -134,7 +130,7 @@ public class AgentWorldSimpleTest {
 		relation3[23][37] = 13;
 		relation3[23][38] = 12;
 		relation3[23][39] = 15;
-		relation3[42][43] = 25;
+		relation3[42][44] = 8;
 		relation3[43][44] = 20;
 		relation3[44][36] = 15;
 		relation3[45][36] = 33;
@@ -147,7 +143,6 @@ public class AgentWorldSimpleTest {
 		relation3[40][47] = 5;
 		relation3[40][48] = 5;
 		relation3[49][48] = 10;
-		
 		
 		//初始化各层的action序号
 		ArrayList<Integer> indexAction1 = new ArrayList<>();

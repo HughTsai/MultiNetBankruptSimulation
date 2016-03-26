@@ -21,7 +21,8 @@ public class AgentsWorldSimple1{
 	private double aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
 	
 	private ExecutorService pool = Executors.newFixedThreadPool(3);
-	private CyclicBarrier barrier = new CyclicBarrier(3) ;
+	//private CyclicBarrier barrier = new CyclicBarrier(3) ;
+	private CyclicBarrier barrier = null ;
 
 	public AgentsWorldSimple1(double u, double e, double k, double aerfa) {
 		super();
@@ -37,10 +38,10 @@ public class AgentsWorldSimple1{
 		int statusAgentLength = 50;
 		StatusAgent[] agents = new StatusAgent[statusAgentLength]; 
 		
-		int[] c = {20,30,30,30,2,15,5,20,15,30,
-					30,5,8,13,2,13,5,30,8,
-					15,5,30,20,15,15,9,5,3,7,
-					3,15,33,18,8,7,12,30,10,8,
+		int[] c = {20,30,30,30,2,15,5,25,15,30,
+					30,5,8,20,2,25,5,30,20,
+					15,20,30,20,15,15,11,5,3,7,
+					20,15,33,20,8,7,12,30,10,8,
 					8,7,6,30,15,10,28,8,10,8,7};
 		
 		for(int i = 0; i < 50 ; i++){
@@ -85,7 +86,7 @@ public class AgentsWorldSimple1{
 		relation2[20][13] = 33;
 		relation2[13][21] = 40;
 		relation2[21][15] = 35;
-		relation2[22][23] = 30;
+		relation2[22][21] = 17;
 		relation2[23][15] = 22;
 		relation2[15][24] = 38;
 		relation2[24][16] = 10;
@@ -101,7 +102,7 @@ public class AgentsWorldSimple1{
 		
 		double[][] relation3 = BnkSimulationLayer.getEmptyRelations(50);
 		relation3[31][18] = 38;
-		relation3[32][18] = 20;
+		relation3[32][18] = 15;
 		relation3[18][29] = 40;
 		relation3[29][33] = 15;
 		relation3[29][34] = 15;
@@ -112,7 +113,7 @@ public class AgentsWorldSimple1{
 		relation3[23][37] = 13;
 		relation3[23][38] = 12;
 		relation3[23][39] = 15;
-		relation3[42][43] = 25;
+		relation3[42][44] = 8;
 		relation3[43][44] = 20;
 		relation3[44][36] = 15;
 		relation3[45][36] = 33;
