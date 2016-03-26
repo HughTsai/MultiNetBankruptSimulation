@@ -51,6 +51,10 @@ public class AgentWorldSimpleTest {
 	public void init(){
 		//this.barrier = new CyclicBarrier(3,new DealWithResult(temp, appointedAgent));
 		AgentManager.clearAll();
+		u = 0.3;// 破产阈值，u >0 , 
+		e = 2;// 周期回复最小值
+		k = 10;// 周期回复速率指标。k越大，回复越慢(周期回复的值越小）。
+		aerfa = 0.5;//破产传染逆向影响系数，  0<=aerfa<=1
 		//第一步先初始化AgentManager中的所有statusAgent
 		int statusAgentLength = 50;
 		StatusAgent[] agents = new StatusAgent[statusAgentLength]; 
@@ -289,7 +293,7 @@ public class AgentWorldSimpleTest {
 		
 		//让初始资产从最小值一直增加到最大值
 		for(double c = this.assetLower;c <= this.assetUpper;c += this.assetIncrement){
-			//c = this.round(c, 2);
+			c = this.round(c, 2);
 			//this.temp.clear();
 			this.assetsRstData = new AssetsRstData(c);
 			//this.temp.add(assetsRstData);
