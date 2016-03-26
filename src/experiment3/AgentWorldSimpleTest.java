@@ -7,6 +7,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import experiment2.PointResult;
 import nju.AgentManager.AgentManager;
 import nju.AgentManager.LayerEnum;
 import nju.AgentManager.StatusAgent;
@@ -14,7 +15,7 @@ import nju.net.components.ActionAgent;
 import nju.net.components.BnkSimulationLayer;
 import nju.util.AgentsWorld;
 import nju.util.OutboundException;
-import nju.util.UtilLock2;
+import nju.util.UtilLock;
 
 public class AgentWorldSimpleTest {
 	public static long INTERVAL = 0;
@@ -25,12 +26,13 @@ public class AgentWorldSimpleTest {
 	//存放该次实验的所有结果
 	private ExperimentData results =null;
 	AssetsRstData assetsRstData = null;
-	ArrayList<AssetsRstData> temp = new ArrayList<>();
+	//ArrayList<AssetsRstData> temp = new ArrayList<>();
 	//指定的agent序号
 	int appointedAgent = -1;
 	
 	private ExecutorService pool = Executors.newFixedThreadPool(3);
-	private CyclicBarrier barrier = null ;
+	//private CyclicBarrier barrier =  new CyclicBarrier(3) ;
+	private CyclicBarrier barrier = null;
 	
 	
 	double u ;// 破产阈值，u >0 , 
@@ -47,7 +49,7 @@ public class AgentWorldSimpleTest {
 		this.appointedAgent = appointedAgent;
 	}
 	public void init(){
-		this.barrier = new CyclicBarrier(3,new DealWithResult(temp, appointedAgent));
+		//this.barrier = new CyclicBarrier(3,new DealWithResult(temp, appointedAgent));
 		AgentManager.clearAll();
 		//第一步先初始化AgentManager中的所有statusAgent
 		int statusAgentLength = 50;
@@ -248,14 +250,33 @@ public class AgentWorldSimpleTest {
 	private void startSimulation(int num ,double currentAsset) {
 		// TODO 自动生成的方法存根
 		int turnbefore_bankruptNums = 0;
-		int timestep = 0;
+		//int timestep = 0;
 		
 		for(int i = 0;i<3;i++){
 			LayerEnum layer = LayerEnum.valueOf("Layer"+(i+1));
 			BnkSimulationLayer bnkLayer = AgentManager.getlayer(layer);
 			pool.execute(bnkLayer);
 		}
-		timestep = 0;
+		while(true){
+			if(UtilLock.getLayerDoneCounter()==3){
+				//UtilLock.lock();
+				System.out.println("数据统计开始");
+				for(int i = 0;i<3;i++){
+					LayerEnum layer = LayerEnum.valueOf("Layer"+(i+1));
+					ActionAgent agent= AgentManager.getStatusAgent("status "+this.appointedAgent).getActionAgent(layer);
+					if(agent!=null){
+						if(agent.isBankruptcy()){
+							this.assetsRstData.addBnkNum(1);
+							break;
+						}
+					}
+				}
+				System.out.println("数据统计结束");
+				//UtilLock.unlock();
+				UtilLock.resetLayerDoneCounter();
+				break;
+			}
+		}
 		System.out.println("当前c值为："+currentAsset+":第"+(num+1)+"次模拟结束");
 	}
 	/**
@@ -274,14 +295,14 @@ public class AgentWorldSimpleTest {
 		//让初始资产从最小值一直增加到最大值
 		for(double c = this.assetLower;c <= this.assetUpper;c += this.assetIncrement){
 			//c = this.round(c, 2);
-			this.temp.clear();
+			//this.temp.clear();
 			this.assetsRstData = new AssetsRstData(c);
-			this.temp.add(assetsRstData);
+			//this.temp.add(assetsRstData);
 			//一个c值，进行多次模拟
 			for(int i = 0;i < simulateNum;i++){
 				this.init();
 				AgentManager.getStatusAgent("status "+this.appointedAgent).setAsset(c);
-				AgentManager.getStatusAgent("status "+this.appointedAgent).setU(0.3*u);
+				AgentManager.getStatusAgent("status "+this.appointedAgent).setU(this.u*c);
 				if(initBankruptNum > 50)
 					break;
 				
@@ -289,9 +310,6 @@ public class AgentWorldSimpleTest {
 				
 				startSimulation(i, c);
 				
-//				UtilLock2.lock();
-//				UtilLock2.ConWait();
-//				UtilLock2.unlock();
 				
 			}
 			results.addData(assetsRstData);

@@ -97,21 +97,18 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 		
 		int turnbefore_bankruptNums = 0;
 		timestep = 0;
-		//System.out.println("第"+this.layer.getName()+"层模拟，"+"第"+timestep+"周期");
-		//System.out.println("第"+this.layer.getName()+"层模拟，"+"当前破产总数量"+AgentsWorld.bankruptNum);
 		while(turnbefore_bankruptNums != AgentsWorld.bankruptNum){
-			turnbefore_bankruptNums = AgentsWorld.bankruptNum;
-			
 			UtilLock.lock();
+			turnbefore_bankruptNums = AgentsWorld.bankruptNum;
 //			if(UtilLock.getPower()==4){
 //				UtilLock.layerConWait();
 //			}
-			try {
-				Thread.sleep(INTERVAL);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(INTERVAL);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			//破产消息传递
 			int length = this.bnkAgents.size();
 			for(int i = 0;i < length;i++){
@@ -129,8 +126,6 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 						agent.thinking();
 				}
 			}
-			
-			
 //			UtilLock.autoIncrease_1();
 //			if(UtilLock.getPower()==4){
 //				UtilLock.controlConSignal();
@@ -142,16 +137,10 @@ public class BnkSimulationLayer extends AgentsWorld implements Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		//System.out.println(Thread.currentThread().getName()+"开始了");
 		this.startSimulation();
-		try {
-			barrier.await();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		UtilLock.autoIncrease_1Counter();
+		//barrier.await();
+		//System.out.println(Thread.currentThread().getName()+"结束了");
 	}
-
 }

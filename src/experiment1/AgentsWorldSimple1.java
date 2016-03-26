@@ -12,6 +12,7 @@ import nju.AgentManager.StatusAgent;
 import nju.net.components.ActionAgent;
 import nju.net.components.BnkSimulationLayer;
 import nju.util.AgentsWorld;
+import nju.util.UtilLock;
 
 public class AgentsWorldSimple1{
 	private double u = 0.3;// 破产阈值，u >0 , 
@@ -255,11 +256,16 @@ public class AgentsWorldSimple1{
 				
 				startSimulation();
 				
-				
-				double final_R_ratio = this.calBankruptRatio();
-				double incre_R_ratio = final_R_ratio - init_R_ratio;
-				
-				incres[i] = incre_R_ratio;
+				while(true){
+					if(UtilLock.getLayerDoneCounter()==3){
+						double final_R_ratio = this.calBankruptRatio();
+						double incre_R_ratio = final_R_ratio - init_R_ratio;
+						
+						incres[i] = incre_R_ratio;
+						UtilLock.resetLayerDoneCounter();
+						break;
+					}
+				}
 				
 			}
 			//we have 1 init_R_ratio and 10 incre_R_ratio now

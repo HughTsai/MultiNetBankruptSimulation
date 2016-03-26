@@ -8,7 +8,18 @@ public class UtilLock {
 	private static Condition layerCondition = lock.newCondition();
 	private static Condition controlCondition = lock.newCondition();
 	private static int power = 1;
+	private static int layerDoneCounter = 0;
 	
+	
+	public static synchronized int getLayerDoneCounter() {
+		return layerDoneCounter;
+	}
+	public static synchronized void resetLayerDoneCounter() {
+		UtilLock.layerDoneCounter = 0;
+	}
+	public static synchronized void autoIncrease_1Counter(){
+		UtilLock.layerDoneCounter++;
+	}
 	public static int getPower() {
 		return power;
 	}
@@ -45,10 +56,10 @@ public class UtilLock {
 			System.out.println("controlCondition的wait出错");
 		}
 	}
-	public static void autoIncrease_1(){
+	public static synchronized void autoIncrease_1(){
 		UtilLock.power+=1;
 	}
-	public static void resetPower(){
+	public static synchronized void resetPower(){
 		UtilLock.power = 1;
 	}
 	
